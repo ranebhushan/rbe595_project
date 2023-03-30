@@ -1,0 +1,13 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# Custom Ignore (includes environment, datasets)
+data/*
+
+# Ignore Filename Extensions
+*.png
+*.jpg
+
+# VSCode
+.vscode/*
+.vs/*
+*.code-workspace
