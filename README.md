@@ -1,5 +1,5 @@
-# 
 
+# RBE595 - Swarm Intelligence 
 [RBE595 - Swarm Intelligence](https://www.wpi.edu/academics/calendar-courses/course-descriptions/3911/robotics-engineering#RBE-595) (Spring 2023)
 
 Master of Science in [Robotics Engineering](https://www.wpi.edu/academics/departments/robotics-engineering) at [Worcester Polytechnic Institute](https://www.wpi.edu/)
