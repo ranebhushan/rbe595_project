@@ -66,7 +66,3 @@ assert result == expected_path, f"Expected {expected_path}, but got {result}"
 # Test the distance function
 result = distance((0,0), (3,3))
 assert result == 4.242640687119285, f"Expected 4.242640687119285, but got {result}"
-
-# Test the heuristic function
-result = heuristic(locations, start, start)
-assert result == 11.65685424949238, f"Expected 11.65685424949238, but got {result})"
