@@ -2,6 +2,7 @@
 
 # Custom Ignore (includes environment, datasets)
 data/*
+swarm_env/*
 
 # Ignore Filename Extensions
 *.png
