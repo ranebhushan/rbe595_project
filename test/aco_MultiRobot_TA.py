@@ -12,14 +12,13 @@ class AntColonyOptimization:
         self.no_of_robots = no_of_robots
         self.no_of_tasks = no_of_tasks
         self.no_of_skills = no_of_skills
-        self.no_of_ants = n_ants # This can be replaced with number of robots
         self.n_iterations = n_iterations
         self.alpha = alpha
         self.beta = beta
         self.evaporation_rate = evaporation_rate
         self.pheromone = np.ones((self.no_of_tasks, self.no_of_tasks))
-        self.best_path = {i: 0 for i in range(self.no_of_ants)}
-        self.best_path_length = {i: np.inf for i in range(self.no_of_ants)}
+        self.best_path = {i: 0 for i in range(self.no_of_robots)}
+        self.best_path_length = {i: np.inf for i in range(self.no_of_robots)}
         
     
     def ant_colony_optimizatoin(self, T):
@@ -34,7 +33,7 @@ class AntColonyOptimization:
             paths = {}
             path_lengths = {}
             
-            for robot in range(self.no_of_ants):
+            for robot in range(self.no_of_robots):
                 # print('Ant {}'.format(ant))
                 visited = [False]*self.no_of_tasks
                 # if the robot does not have the skill to complete the a particular task mark it as visied
