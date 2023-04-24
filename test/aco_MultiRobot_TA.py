@@ -128,6 +128,8 @@ class AntColonyOptimization:
                 if path_length_temp == np.inf or path_length_temp == 0:
                     continue
                 # print('path_temp', path_temp, 'path_length_temp', path_length_temp)
+                # TODO: WE CAN UPDATE PHERMONE HERE BASED ON THE TIME SIMULATION - CONSIDERING WAIT TIME FOR EACH TASK AND COALITION FORMATION TIME 
+                # ADD REWARDS FOR COALITION FORMATION AND SUCCESSFUL COMPLETION OF TASK
                 for i in range(len(path_temp)-1):
                     self.pheromone[path_temp[i]][path_temp[i+1]] += 1/path_length_temp
                 self.pheromone[path_temp[-1]][path_temp[0]] += 1/path_length_temp
