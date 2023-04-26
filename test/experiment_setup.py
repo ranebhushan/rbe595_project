@@ -13,11 +13,13 @@ for i in range(2,8):
     NUM_SKILLS = int(NUM_TASKS * .6)
     MAX_SKILLS_PER_TASK = 1
 
-    solving_time_sharing = {}
-    solving_time_no_sharing = {}
+    df_sharing = pd.DataFrame(columns=['exp_no','solving_time', 'best_path_length'])
+    df_no_sharing = pd.DataFrame(columns=['exp_no','solving_time', 'best_path_length'])
+    # solving_time_sharing = {}
+    # solving_time_no_sharing = {}
 
-    best_path_length_sharing = {}
-    best_path_length_no_sharing = {}    
+    # best_path_length_sharing = {}
+    # best_path_length_no_sharing = {}    
     # print(f'Robot Skill Matrix:\n{gen.robot_skill_matrix}')
     # print(f'Task Skill Matrix:\n{gen.task_skill_matrix}')
     for exp in range(NO_OF_EXPERIMENTS):
@@ -49,18 +51,15 @@ for i in range(2,8):
             time_taken = end_time - start_time
             
             if task_sharing_flag:
-                solving_time_sharing[exp] = time_taken 
-                best_path_length_sharing[exp] = sum(system.best_path_lengths) 
+                df_sharing = df_sharing.append({'exp_no':exp, 'solving_time':time_taken, 'best_path_length':sum(system.best_path_lengths)}, ignore_index=True)
+                
             else:
-                solving_time_no_sharing[exp] = time_taken
-                best_path_length_no_sharing[exp] = sum(system.best_path_lengths)
+                df_no_sharing = df_no_sharing.append({'exp_no':exp, 'solving_time':time_taken, 'best_path_length':sum(system.best_path_lengths)}, ignore_index=True)
+                
 
+    df_sharing.to_csv(f'../Experiment_data/rst_{NUM_ROBOTS}_{NUM_SKILLS}_{NUM_TASKS}_sharing.csv')
 
-    df_sharing = pd.DataFrame.from_dict([solving_time_sharing, best_path_length_sharing], orient='index', columns=['Time'])
-    df_sharing.to_csv(f'../Experiment_data/{NUM_ROBOTS}_{NUM_SKILLS}_{NUM_TASKS}_sharing.csv')
-
-    df_sharing = pd.DataFrame.from_dict(solving_time_no_sharing, best_path_length_no_sharing, orient='index', columns=['Time'])
-    df_sharing.to_csv(f'../Experiment_data/{NUM_ROBOTS}_{NUM_SKILLS}_{NUM_TASKS}_NO_sharing.csv')
+    df_no_sharing.to_csv(f'../Experiment_data/rst_{NUM_ROBOTS}_{NUM_SKILLS}_{NUM_TASKS}_NO_sharing.csv')
 
     print(f'Experiment {exp} done')
 
