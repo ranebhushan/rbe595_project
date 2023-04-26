@@ -4,7 +4,7 @@ import datetime
 import os
 
 class CaseGenerator:
-    def __init__(self, num_robots, num_skills, num_tasks, x_boundary=10, y_boundary=10, max_skills_per_task=3):
+    def __init__(self, num_robots, num_skills, num_tasks, x_boundary=10, y_boundary=10, max_skills_per_task=2, n=0):
         self.num_robots = num_robots
         self.num_skills = num_skills
         self.num_tasks = num_tasks
@@ -12,13 +12,15 @@ class CaseGenerator:
         self.x_boundary = x_boundary
         self.y_boundary = y_boundary
         self.robot_skill_matrix= self.generate_Q_matrix()
+        if n:
+            self.robot_skill_matrix= self.generate_multiskill_Q_matrix(n)
         self.task_skill_matrix= self.generate_R_matrix()
         self.distance_matrix = np.zeros((self.num_robots, self.num_tasks, self.num_tasks), dtype=int)
         self.total_time_matrix= np.zeros((self.num_robots, self.num_tasks, self.num_tasks), dtype=int)
         self.task_completion_time = np.zeros((self.num_robots, self.num_tasks), dtype=int)
         self.task_locations = self.generate_task_locations()
         self.total_time_matrix= self.generate_T_matrix()
-
+     
     def generate_Q_matrix(self):
         Q = np.zeros((self.num_robots, self.num_skills), dtype=int)
         skills = list(range(self.num_skills))
@@ -27,6 +29,15 @@ class CaseGenerator:
             Q[i][skills[i]] = 1
         return Q
     
+    def generate_multiskill_Q_matrix(self, n):
+        Q = np.zeros((self.num_robots, self.num_skills), dtype=int)
+        skills = list(range(self.num_skills))
+        for i in range(self.num_robots):
+            selected_skills = random.sample(skills, n)
+            for j in selected_skills:
+                Q[i][j] = 1
+        return Q
+
     def generate_R_matrix(self):
 
         R = np.zeros((self.num_tasks, self.num_skills), dtype=int)
@@ -60,17 +71,17 @@ if __name__ == "__main__":
     x_boundary = 10
     y_boundary = 10
 
-    case = CaseGenerator(num_robots, num_skills, num_tasks, x_boundary, y_boundary)
-    # print("Q:")
-    # for row in case.robot_skill_mat:
-    #     print(row)
+    case = CaseGenerator(num_robots, num_skills, num_tasks, x_boundary, y_boundary, n=2)
+    print("Q:")
+    for row in case.robot_skill_matrix:
+        print(row)
 
-    # print("R:")
-    # for row in case.task_skill_mat:
-    #     print(row)
+    print("R:")
+    for row in case.task_skill_matrix:
+        print(row)
 
-    # print("T:", case.total_time_mat)
-    # print("Task Locations:", case.task_locations)
+    print("T:", case.total_time_matrix)
+    print("Task Locations:", case.task_locations)
     
     # np.savetxt(f"../input_data/robot_skill_mat.csv", case.robot_skill_mat, delimiter=",")
     # np.savetxt(f"../input_data/task_skill_mat.csv", case.task_skill_mat, delimiter=",")
