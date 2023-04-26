@@ -1,11 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os, sys
-import datetime
-import time
-import random
-import math
-import copy
+import matplotlib.markers as mmarkers
+
 
 # Custom Imports
 import generateTestCases as gtc
@@ -129,6 +125,7 @@ class TaskSharing:
                  distance_matrix : np.ndarray,
                  task_completion_time : np.ndarray,
                  total_time_matrix : np.ndarray,
+                 task_locations : np.ndarray,
                  alpha : float = 0.5,
                  beta : float = 0.5,
                  gamma : float = 0.5,
@@ -143,6 +140,7 @@ class TaskSharing:
         self.distance_matrix = distance_matrix
         self.task_completion_time = task_completion_time
         self.total_time_matrix = total_time_matrix
+        self.task_locations = task_locations
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
@@ -183,7 +181,7 @@ class TaskSharing:
 
             for i in range(len(unvisited_tasks)):
 
-                if(self.total_time_matrix[ant.ant_id][ant.current_task][unvisited_tasks[i]] == np.inf):
+                if(self.total_time_matrix[ant.ant_id][ant.current_task][unvisited_tasks[i]] == 0):
                     likelihood[i] = 0
                     ant.visited_tasks[unvisited_tasks[i]] = True
 
@@ -206,10 +204,8 @@ class TaskSharing:
             ant.path.append(next_task)
             ant.current_task = next_task
             ant.visited_tasks[next_task] = True
-        ant.update_best_path()            
-
-
-    
+        ant.update_best_path()
+        
     def sharing_is_caring(self):
         """ This function takes care of robots sharing their best paths with each other"""
         for ant in self.ants:
@@ -219,6 +215,36 @@ class TaskSharing:
                     continue
                 else:
                     ant.others_paths[other_ant.ant_id] = other_ant.best_path   
+
+    def plot_task_allocation(self, best_paths):
+        # unique_markers = list(mmarkers.MarkerStyle.markers.keys())
+        unique_markers = ['x', 'o', '^', '>', '<', 'v', 's', 'p', '*', 'h', 'H', 'D', 'd', 'P', 'X', '8', '1', '2', '3', '4', 'd', 'p', 'h', 'H', '+', 'x', 'X', 'D', 'd', '|', '_']
+        colors = plt.cm.rainbow(np.linspace(0, 1, len(best_paths)))
+        markers = []
+        for i, task_location in enumerate(self.task_locations):
+            
+            task_skills = np.where(self.task_skill_matrix[i] == 1)[0]
+            for task_skill in task_skills:
+                markers.append(unique_markers[task_skill]) 
+                markers = list(set(markers))
+                plt.scatter(task_location[0], task_location[1], marker=unique_markers[task_skill], color='black', s=100)
+        
+        for i, best_path in enumerate(best_paths):
+            color = colors[i]
+            print(best_path)
+            best_path_locations = [self.task_locations[task] for task in best_path]
+            x, y = zip(*best_path_locations)
+            plt.plot(x, y, c=color, linewidth=2, label=f"Robot {i}")
+
+        legend_handles = [plt.Line2D([0], [0], linestyle='none', marker=m, color='black') for m in markers]
+        legend_handles.append(plt.Line2D([0], [0], linestyle='-', color='black'))
+        plt.legend(handles=legend_handles, labels=[f"Skill {i}" for i in range(len(markers))] + ["Robot Path"], loc='upper left')
+        # Set axis limits and title
+        plt.xlim([min(x for x, y in self.task_locations)-1, max(x for x, y in self.task_locations)+1])
+        plt.ylim([min(y for x, y in self.task_locations)-1, max(y for x, y in self.task_locations)+1])
+        plt.title("Task Allocation with Robot Paths")
+        plt.show()
+
 
     def gobabygo(self, num_iterations : int):
         self.num_iterations = num_iterations
@@ -238,7 +264,7 @@ class TaskSharing:
 if __name__ == "__main__":
     gen = gtc.CaseGenerator(num_robots=6,
                             num_skills=3,
-                            num_tasks=20)
+                            num_tasks=12)
     
     print(f'Robot Skill Matrix:\n{gen.robot_skill_matrix}')
     print(f'Task Skill Matrix:\n{gen.task_skill_matrix}')
@@ -259,8 +285,10 @@ if __name__ == "__main__":
                             distance_matrix=gen.distance_matrix,
                             task_completion_time=gen.task_completion_time,
                             total_time_matrix=gen.total_time_matrix,
+                            task_locations=gen.task_locations,
                             task_sharing_flag = task_sharing_flag)
         
-        system.gobabygo(num_iterations=10)
+        system.gobabygo(num_iterations=2*gen.num_tasks)
+        system.plot_task_allocation(system.best_paths)
         print("Best Paths ", system.best_paths, "\n", "Best Path Lengths ", system.best_path_lengths)
         exit_code = int(input("Enter 0 to continue, 1 to exit: "))

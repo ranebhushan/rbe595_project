@@ -5,7 +5,7 @@ import os, sys
 import copy
 
 class CaseGenerator:
-    def __init__(self, num_robots, num_skills, num_tasks, x_boundary=10, y_boundary=10, max_skills_per_task=1):
+    def __init__(self, num_robots, num_skills, num_tasks, x_boundary=10, y_boundary=10, max_skills_per_task=2):
         self.num_robots = num_robots
         self.num_skills = num_skills
         self.num_tasks = num_tasks
@@ -68,7 +68,9 @@ class CaseGenerator:
     
     def generate_task_locations(self):
         first_task = np.array([5,5])
-        return np.vstack((first_task, np.random.randint(0, self.x_boundary, size=(self.num_tasks, 2))))
+        task_locations = np.vstack((first_task, np.random.randint(0, self.x_boundary, size=(self.num_tasks-1, 2))))
+        print(task_locations)
+        return task_locations
     
     def generate_T_matrix(self):
         
