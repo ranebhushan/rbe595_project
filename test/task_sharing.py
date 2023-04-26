@@ -46,12 +46,12 @@ class Ant:
                     resolve = False
                     for task in overlapping_tasks:
                         skills_required_by_task = np.where(self.task_skill_matrix[task] == 1)[0]
-                        print('skills_required_by_task = ', skills_required_by_task)
+                        # print('skills_required_by_task = ', skills_required_by_task)
                         for skill in skills_required_by_task:
-                            print('skill = ', skill)
+                            # print('skill = ', skill)
                             if(self.robot_skill_matrix[self.ant_id][skill] == self.robot_skill_matrix[robot][skill]):
                                 resolve = True
-                                break
+                                
 
                         if task == 0 or resolve == False:
                             continue
@@ -65,7 +65,7 @@ class Ant:
                                 pass
                             else:
                                 self.others_task.append(task)
-            print(f'{self.ant_id}self.others_task = {self.others_task}')
+            # print(f'{self.ant_id}self.others_task = {self.others_task}')
 
     def conflict_resolution(self, robot, task):
         """This code resolves the conflict between two robots who have the same task at the same time
@@ -98,10 +98,10 @@ class Ant:
         # self.visited_tasks = not np.dot(robot_skill_matrix[self.ant_id],task_skill_matrix).tolist()
 
         self.skills = np.where(robot_skill_matrix[self.ant_id] == 1)[0]
-        print(f'Robot {self.ant_id} has skills {self.skills}')
+        # print(f'Robot {self.ant_id} has skills {self.skills}')
         
         self.to_do_tasks = list(set(np.where(task_skill_matrix[:, self.skills] == 1)[0]))
-        print(f'Robot {self.ant_id} can do tasks {self.to_do_tasks}')
+        # print(f'Robot {self.ant_id} can do tasks {self.to_do_tasks}')
 
         self.visited_tasks = [False] * task_skill_matrix.shape[0]
         
@@ -110,15 +110,14 @@ class Ant:
             if task not in self.to_do_tasks or task in self.others_task:
                 # print(f'Robot {self.ant_id} cannot do task {self.others_task}')
                 self.visited_tasks[task] = True
-        # self.others_task = []
-        print(f'Ant {self.ant_id} Visited tasks = {self.visited_tasks}')
+        # print(f'Ant {self.ant_id} Visited tasks = {self.visited_tasks}')
         # self.visited_tasks = np.where(task_skill_matrix[:, skill for skill in self.skills] == 1)[0]
 
     def update_best_path(self):
         if self.path_length < self.best_path_length:
             self.best_path_length = self.path_length
             self.best_path = self.path
-        print(f'{self.ant_id} best path = {self.best_path}')
+        # print(f'{self.ant_id} best path = {self.best_path}')
 
 class TaskSharing:
     def __init__(self, 
@@ -133,7 +132,8 @@ class TaskSharing:
                  alpha : float = 0.5,
                  beta : float = 0.5,
                  gamma : float = 0.5,
-                 evaporation_rate : float = 0.1) -> None:
+                 evaporation_rate : float = 0.1,
+                 task_sharing_flag : bool = True) -> None:
         
         self.num_robots = num_robots
         self.num_skills = num_skills
@@ -147,7 +147,7 @@ class TaskSharing:
         self.beta = beta
         self.gamma = gamma
         self.evaporation_rate = evaporation_rate
-        
+        self.task_sharing_flag = task_sharing_flag
         # Empty Variables
         self.best_path = []
 
@@ -224,35 +224,43 @@ class TaskSharing:
         self.num_iterations = num_iterations
         for i in range(self.num_iterations):
             for ant in self.ants:
-                ant.reschedule()
+                if self.task_sharing_flag:
+                    ant.reschedule()
                 self.launch_ant(ant)
             self.sharing_is_caring()
             self.update_pheromone()
         
         self.best_paths = [ant.best_path for ant in self.ants]
+        self.best_path_lengths = [ant.best_path_length for ant in self.ants]
             # self.best_paths = self.update_best_path()
-        return self.best_paths
+        return self.best_paths, self.best_path_lengths
     
 if __name__ == "__main__":
-    gen = gtc.CaseGenerator(num_robots=3,
+    gen = gtc.CaseGenerator(num_robots=6,
                             num_skills=3,
-                            num_tasks=10)
+                            num_tasks=20)
     
     print(f'Robot Skill Matrix:\n{gen.robot_skill_matrix}')
     print(f'Task Skill Matrix:\n{gen.task_skill_matrix}')
 
-    # aunty = Ant(ant_id=0, 
-    #             robot_skill_matrix = gen.robot_skill_matrix, 
-    #             task_skill_matrix = gen.task_skill_matrix)
-    
-    system = TaskSharing(num_robots=gen.num_robots,
-                        num_skills=gen.num_skills,
-                        num_tasks=gen.num_tasks,
-                        robot_skill_matrix=gen.robot_skill_matrix,
-                        task_skill_matrix=gen.task_skill_matrix,
-                        distance_matrix=gen.distance_matrix,
-                        task_completion_time=gen.task_completion_time,
-                        total_time_matrix=gen.total_time_matrix)
-    
-    system.gobabygo(num_iterations=10)
-    print("Best Paths ", system.best_paths)
+    exit_code = 0
+    while exit_code == 0:
+        task_sharing_check = input("Do you want to enable task sharing? (y/n): ")
+        
+        task_sharing_flag = False
+        if task_sharing_check == 'y':
+            task_sharing_flag = True
+        
+        system = TaskSharing(num_robots=gen.num_robots,
+                            num_skills=gen.num_skills,
+                            num_tasks=gen.num_tasks,
+                            robot_skill_matrix=gen.robot_skill_matrix,
+                            task_skill_matrix=gen.task_skill_matrix,
+                            distance_matrix=gen.distance_matrix,
+                            task_completion_time=gen.task_completion_time,
+                            total_time_matrix=gen.total_time_matrix,
+                            task_sharing_flag = task_sharing_flag)
+        
+        system.gobabygo(num_iterations=10)
+        print("Best Paths ", system.best_paths, "\n", "Best Path Lengths ", system.best_path_lengths)
+        exit_code = int(input("Enter 0 to continue, 1 to exit: "))

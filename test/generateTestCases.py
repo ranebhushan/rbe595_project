@@ -5,7 +5,7 @@ import os, sys
 import copy
 
 class CaseGenerator:
-    def __init__(self, num_robots, num_skills, num_tasks, x_boundary=10, y_boundary=10, max_skills_per_task=2):
+    def __init__(self, num_robots, num_skills, num_tasks, x_boundary=10, y_boundary=10, max_skills_per_task=1):
         self.num_robots = num_robots
         self.num_skills = num_skills
         self.num_tasks = num_tasks
@@ -21,6 +21,7 @@ class CaseGenerator:
         self.total_time_matrix= np.zeros((self.num_robots, self.num_tasks, self.num_tasks), dtype=int)
         self.task_completion_time = np.zeros((self.num_robots, self.num_tasks), dtype=int)
         self.task_locations = self.generate_task_locations()
+        # print('Task Locations: ', self.task_locations)
         self.total_time_matrix= self.generate_T_matrix()
      
     def generate_Q_matrix(self):
@@ -66,7 +67,8 @@ class CaseGenerator:
         return R
     
     def generate_task_locations(self):
-        return np.random.randint(0, self.x_boundary, size=(self.num_tasks, 2))
+        first_task = np.array([5,5])
+        return np.vstack((first_task, np.random.randint(0, self.x_boundary, size=(self.num_tasks, 2))))
     
     def generate_T_matrix(self):
         
@@ -77,11 +79,17 @@ class CaseGenerator:
                     self.distance_matrix[i,j,k] = int(np.sqrt((self.task_locations[j][0]-self.task_locations[k][0])**2 
                                         + (self.task_locations[j][1]-self.task_locations[k][1])**2))
                     # task completeion time for robot i to complete task j
-                    self.task_completion_time[i][j] = np.random.randint(1, 11) * self.task_skill_matrix[j][i]
+                    self.task_completion_time[i][j] = np.random.randint(1, 11) * self.check_robot_task_skills(i, j)
                     # Set time taken to go from task j to k for robot i as distance plus time taken to complete task j
                     self.total_time_matrix[i][j][k] = self.distance_matrix[i,j,k] + self.task_completion_time[i][j]
         return self.total_time_matrix
     
+    def check_robot_task_skills(self, robot, task):
+        # print(f'Robot: {robot}, Task: {task}, robot_skill_matrix: {self.robot_skill_matrix[robot]}, task_skill_matrix: {self.task_skill_matrix[task]}')
+        if np.dot(self.robot_skill_matrix[robot], self.task_skill_matrix[task].transpose()) > 0:
+            return 1
+        return 0
+
 if __name__ == "__main__":
     num_robots = 10
     num_skills = 7
