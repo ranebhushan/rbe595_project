@@ -16,12 +16,12 @@ class CaseGenerator:
 
         # if max_multiple_skills:
             # self.robot_skill_matrix= self.generate_multiskill_Q_matrix(max_multiple_skills)
-        # self.task_skill_matrix= self.generate_R_matrix()
-        # self.distance_matrix = np.zeros((self.num_robots, self.num_tasks, self.num_tasks), dtype=int)
-        # self.total_time_matrix= np.zeros((self.num_robots, self.num_tasks, self.num_tasks), dtype=int)
-        # self.task_completion_time = np.zeros((self.num_robots, self.num_tasks), dtype=int)
-        # self.task_locations = self.generate_task_locations()
-        # self.total_time_matrix= self.generate_T_matrix()
+        self.task_skill_matrix= self.generate_R_matrix()
+        self.distance_matrix = np.zeros((self.num_robots, self.num_tasks, self.num_tasks), dtype=int)
+        self.total_time_matrix= np.zeros((self.num_robots, self.num_tasks, self.num_tasks), dtype=int)
+        self.task_completion_time = np.zeros((self.num_robots, self.num_tasks), dtype=int)
+        self.task_locations = self.generate_task_locations()
+        self.total_time_matrix= self.generate_T_matrix()
      
     def generate_Q_matrix(self):
         """
@@ -46,10 +46,11 @@ class CaseGenerator:
     def generate_robot_skill_matrix(self):        
         mat = np.zeros((self.num_robots, self.num_skills), dtype=int)
         skillset = list(range(self.num_skills))
-        available_skills = copy.deepcopy(skillset)
+        available_skills = []
         for i in range(self.num_robots):
             if (len(available_skills) == 0):
                 available_skills = copy.deepcopy(skillset)
+                random.shuffle(available_skills)
             selected_skill = np.random.choice(available_skills)
             mat[i][selected_skill] = 1
             available_skills.remove(selected_skill)
