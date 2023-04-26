@@ -24,6 +24,8 @@ class Ant:
         self.best_path_length = np.inf
         self.others_task = []
         self.total_time_matrix = total_time_matrix
+        self.robot_skill_matrix = robot_skill_matrix
+        self.task_skill_matrix = task_skill_matrix
         
         self.reset(robot_skill_matrix, task_skill_matrix)
 
@@ -31,17 +33,28 @@ class Ant:
         """ This function uses the robots best path and others best path and reschedules the tasks"""
         
         if self.others_paths:
+            
             # For every task that other robots visit which are same as your previous task, 
             # for the next loop you do not visit the tasks which you visit very late in the previous iteration 
             # and let the other robot with same skill visit it
             for robot, path in self.others_paths.items():
-                overlapping_tasks = list(set(path) & set(self.best_path)).remove(0)  
+                overlapping_tasks = list(set(path) & set(self.best_path)) 
                 if overlapping_tasks:
                     # Check if the overlapping task in our path has a higher index than the other robot, if yes then remove it from our path
                     # if no keep that task
                     # if same then go to conflict resolution
+                    resolve = False
                     for task in overlapping_tasks:
-                        
+                        skills_required_by_task = np.where(self.task_skill_matrix[task] == 1)[0]
+                        print('skills_required_by_task = ', skills_required_by_task)
+                        for skill in skills_required_by_task:
+                            print('skill = ', skill)
+                            if(self.robot_skill_matrix[self.ant_id][skill] == self.robot_skill_matrix[robot][skill]):
+                                resolve = True
+                                break
+
+                        if task == 0 or resolve == False:
+                            continue
                         
                         if self.best_path.index(task) > path.index(task):
                             self.others_task.append(task)
@@ -52,7 +65,7 @@ class Ant:
                                 pass
                             else:
                                 self.others_task.append(task)
-    
+            print(f'{self.ant_id}self.others_task = {self.others_task}')
 
     def conflict_resolution(self, robot, task):
         """This code resolves the conflict between two robots who have the same task at the same time
@@ -95,9 +108,10 @@ class Ant:
         # For every task that is not in the list of tasks that the robot can do, mark it as visited
         for task in range(task_skill_matrix.shape[0]):
             if task not in self.to_do_tasks or task in self.others_task:
+                # print(f'Robot {self.ant_id} cannot do task {self.others_task}')
                 self.visited_tasks[task] = True
-                self.others_task = []
-
+        # self.others_task = []
+        print(f'Ant {self.ant_id} Visited tasks = {self.visited_tasks}')
         # self.visited_tasks = np.where(task_skill_matrix[:, skill for skill in self.skills] == 1)[0]
 
     def update_best_path(self):
@@ -161,7 +175,7 @@ class TaskSharing:
         ant.visited_tasks[ant.current_task] = True
         ant.path.append(ant.current_task)
         ant.path_length = 0.0
-        print(f'Ant {ant.ant_id} Visited tasks = {ant.visited_tasks}')
+       
         
         while False in ant.visited_tasks:
             unvisited_tasks = np.where(np.logical_not(ant.visited_tasks))[0]
@@ -199,6 +213,7 @@ class TaskSharing:
     def sharing_is_caring(self):
         """ This function takes care of robots sharing their best paths with each other"""
         for ant in self.ants:
+            ant.others_task = []
             for other_ant in self.ants:
                 if ant.ant_id == other_ant.ant_id:
                     continue
