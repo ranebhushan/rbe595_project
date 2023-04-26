@@ -126,10 +126,10 @@ class TaskSharing:
                  task_completion_time : np.ndarray,
                  total_time_matrix : np.ndarray,
                  task_locations : np.ndarray,
-                 alpha : float = 0.5,
-                 beta : float = 0.5,
+                 alpha : float = 1,
+                 beta : float = 1,
                  gamma : float = 0.5,
-                 evaporation_rate : float = 0.1,
+                 evaporation_rate : float = 0.3,
                  task_sharing_flag : bool = True) -> None:
         
         self.num_robots = num_robots
@@ -188,7 +188,8 @@ class TaskSharing:
                 else:
 
                     likelihood[i] = self.pheromone_matrix[ant.ant_id][ant.current_task][unvisited_tasks[i]]**self.alpha / self.total_time_matrix[ant.ant_id][ant.current_task][unvisited_tasks[i]]**self.beta
-
+            
+            # probability = likelihood
             if np.sum(likelihood) > 0:
                 probability = likelihood / np.sum(likelihood)
 
@@ -196,7 +197,9 @@ class TaskSharing:
                 probability = 0
                 # TODO : If any miscellaneous path is found, check previous code 
                 continue
-
+            if np.sum(likelihood) == 0:
+                probability = 0
+                continue
             # Select next task
             next_task = np.random.choice(a = unvisited_tasks, p = probability)
             
