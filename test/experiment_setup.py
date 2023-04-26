@@ -7,7 +7,7 @@ import pandas as pd
 NO_OF_EXPERIMENTS = 50
 
 
-for i in range(6,8):
+for i in range(2,8):
     NUM_TASKS = 2**i
     NUM_ROBOTS = NUM_TASKS//2
     NUM_SKILLS = int(NUM_TASKS * .6)
@@ -50,10 +50,10 @@ for i in range(6,8):
             
             if task_sharing_flag:
                 solving_time_sharing[exp] = time_taken 
-                best_path_length_sharing[exp] = sum(system.best_path_length) 
+                best_path_length_sharing[exp] = sum(system.best_path_lengths) 
             else:
                 solving_time_no_sharing[exp] = time_taken
-                best_path_length_no_sharing[exp] = sum(system.best_path_length)
+                best_path_length_no_sharing[exp] = sum(system.best_path_lengths)
 
 
     df_sharing = pd.DataFrame.from_dict([solving_time_sharing, best_path_length_sharing], orient='index', columns=['Time'])
