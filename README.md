@@ -23,3 +23,5 @@ This project proposes a multi-robot system, that shares tasks requiring diverse 
 - Clone the repository
 - cd rbe595_project
 - python run.py
+
+- All the required code to run this project successfully is in src. test folder is for developers only and some code in this folder might not execute as expected.
