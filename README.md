@@ -11,15 +11,15 @@ Master of Science in [Robotics Engineering](https://www.wpi.edu/academics/depart
 
 ## Project Description
 
-> Coming Soon
+This project proposes a multi-robot system, that shares tasks requiring diverse skill sets. The system assigns tasks to robots based on their unique set of skills and forms shares them to complete complex tasks faster. The methodology proposed includes designing a multi-robot task allocation system using a decentralized method. The implementation is done using Ant Colony Optimization (ACO) and auction based model is used to enable task sharing. The proposed system can efficiently allocate tasks to robots and share them amongst themselves, maximizing efficiency and minimizing resources spent.
 
 ### Dependencies
 - Python : [3.8.10](https://www.python.org/downloads/release/python-3810/)
-
-### Environment Setup
-
-> Coming Soon
+- pyplot
 
 ### Usage Guidelines
 
-> Coming Soon
+- Install all the dependencies
+- Clone the repository
+- cd rbe595_project
+- python run.py
