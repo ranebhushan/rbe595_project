@@ -1,4 +1,4 @@
-# Multi-Robot Coalition for Task Execution
+# Multi-Robot for Task Allocation with Task Sharinf
 
 Course Project for [RBE595 - Swarm Intelligence](https://www.wpi.edu/academics/calendar-courses/course-descriptions/3911/robotics-engineering#RBE-595) (Spring 2023)
 
