@@ -1,4 +1,4 @@
-# Multi-Robot for Task Allocation with Task Sharinf
+# Multi-Robot for Task Allocation with Task Sharing
 
 Course Project for [RBE595 - Swarm Intelligence](https://www.wpi.edu/academics/calendar-courses/course-descriptions/3911/robotics-engineering#RBE-595) (Spring 2023)
 
